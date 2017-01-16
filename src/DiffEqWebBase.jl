@@ -30,5 +30,14 @@ module DiffEqWebBase
     QuickODESolution(u,t,k,prob,alg,interp,dense,0)
   end
 
-  export QuickODEProblem, QuickODESolution
+
+  type QuickSDEProblem{uType,tType,isinplace,NoiseClass,F3} <: AbstractSDEProblem{uType,tType,isinplace,NoiseClass,Function,Function,F3}
+    f::Function
+    g::Function
+    u0::uType
+    tspan::Tuple{tType,tType}
+    noise::DiffEqBase.NoiseProcess{NoiseClass,F3}
+  end
+
+  export QuickODEProblem, QuickODESolution,QuickSDEProblem
 end
