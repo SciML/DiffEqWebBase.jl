@@ -5,10 +5,16 @@ module DiffEqWebBase
 
   import DiffEqBase: build_solution
 
-  immutable QuickODEProblem{uType,tType,isinplace} <: AbstractODEProblem{uType,tType,isinplace,Function}
+  immutable QuickODEProblem{uType,tType,isinplace} <: AbstractODEProblem{uType,tType,isinplace}
     f::Function
     u0::uType
     tspan::Tuple{tType,tType}
+    callback::C
+  end
+
+  function QuickODEProblem(f,u0,tspan)
+    callback = CallbackSet()
+    QuickODEProblem{typeof(u0),eltype(tspan),true,typeof(callback)}(f,u0,tspan,callback)
   end
 
   immutable QuickODESolution{uType,tType,rateType,P,A} <: AbstractODESolution
@@ -31,12 +37,21 @@ module DiffEqWebBase
   end
 
 
-  type QuickSDEProblem{uType,tType,isinplace,NoiseClass,F3} <: AbstractSDEProblem{uType,tType,isinplace,NoiseClass,Function,Function,F3}
+  type QuickSDEProblem{uType,tType,isinplace,NoiseClass,F3,C,ND} <: AbstractSDEProblem{uType,tType,isinplace,NoiseClass,ND}
     f::Function
     g::Function
     u0::uType
     tspan::Tuple{tType,tType}
     noise::DiffEqBase.NoiseProcess{NoiseClass,F3}
+    callback::C
+    noise_rate_prototype::ND
+  end
+
+  function QuickSDEProblem(f,g,u0,tspan)
+    noise = INPLACE_WHITE_NOISE
+    callback = CallbackSet()
+    noise_rate_prototype = nothing
+    QuickSDEProblem{typeof(u0),eltype(tspan),true,true,:White,typeof(noise.noise_func),typeof(callback),typeof(noise_rate_prototype)}(f,g,u0,tspan,noise,callback,noise_rate_prototype)
   end
 
   export QuickODEProblem, QuickODESolution,QuickSDEProblem
