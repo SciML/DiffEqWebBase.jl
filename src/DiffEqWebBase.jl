@@ -5,7 +5,7 @@ module DiffEqWebBase
 
   import DiffEqBase: build_solution
 
-  immutable QuickODEProblem{uType,tType,isinplace} <: AbstractODEProblem{uType,tType,isinplace}
+  struct QuickODEProblem{uType,tType,isinplace,C} <: DiffEqBase.AbstractODEProblem{uType,tType,isinplace}
     f::Function
     u0::uType
     tspan::Tuple{tType,tType}
@@ -17,7 +17,7 @@ module DiffEqWebBase
     QuickODEProblem{typeof(u0),eltype(tspan),true,typeof(callback)}(f,u0,tspan,callback)
   end
 
-  immutable QuickODESolution{uType,tType,rateType,P,A} <: AbstractODESolution
+  struct QuickODESolution{uType,tType,rateType,P,A} <: DiffEqBase.AbstractODESolution
     u::uType
     t::tType
     k::rateType
@@ -37,7 +37,7 @@ module DiffEqWebBase
   end
 
 
-  type QuickSDEProblem{uType,tType,isinplace,NoiseClass,F3,C,ND} <: AbstractSDEProblem{uType,tType,isinplace,NoiseClass,ND}
+  mutable struct QuickSDEProblem{uType,tType,isinplace,NoiseClass,F3,C,ND} <: DiffEqBase.AbstractSDEProblem{uType,tType,isinplace,NoiseClass,ND}
     f::Function
     g::Function
     u0::uType
